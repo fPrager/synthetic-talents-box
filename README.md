@@ -1,5 +1,7 @@
 # Synthetic Talents Box
 
+![Preview](img/preview.png)
+
 > **Hackday Berlin** — A gamified, animated observability dashboard for [OpenClaw](https://docs.openclaw.ai/) agent environments.
 
 ---
