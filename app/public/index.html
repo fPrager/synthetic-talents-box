@@ -46,6 +46,81 @@
       z-index: 10;
     }
 
+    /* ===== NEW AGENT MODAL ===== */
+    #new-agent-modal {
+      display: none;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 420px; max-width: 95vw;
+      background: var(--warm-bg);
+      border: 3px solid var(--amber);
+      border-radius: 5px;
+      box-shadow: 0 0 0 1px var(--amber-dk), 5px 5px 0 rgba(100,60,0,0.5), 0 0 50px rgba(200,150,60,0.25);
+      pointer-events: all;
+      z-index: 200;
+      flex-direction: column;
+    }
+    #new-agent-modal.open { display: flex; }
+
+    .nam-titlebar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(90deg, #2a1a08, #1c1208);
+      padding: 9px 15px;
+      border-bottom: 2px solid var(--amber-dk);
+    }
+    .nam-title {
+      color: var(--amber-lt);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem; letter-spacing: 0.1em;
+    }
+    .nam-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+    .nam-field { display: flex; flex-direction: column; gap: 6px; }
+    .nam-label {
+      color: var(--warm-dim);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem; letter-spacing: 0.08em;
+    }
+    .nam-input {
+      background: var(--warm-mid);
+      border: 2px solid var(--amber-dk);
+      color: var(--amber-lt);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem; padding: 8px 10px;
+      border-radius: 3px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .nam-input:focus { border-color: var(--amber); }
+    .nam-row { display: flex; gap: 10px; }
+    .nam-btn {
+      flex: 1;
+      background: var(--warm-mid);
+      border: 2px solid var(--amber);
+      color: var(--amber-lt); cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem; padding: 10px 12px;
+      border-radius: 3px; letter-spacing: 0.05em;
+      transition: all 0.1s;
+    }
+    .nam-btn:hover:not(:disabled) { background: var(--amber); color: var(--warm-bg); }
+    .nam-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .nam-btn.primary { border-color: var(--green-ok); color: var(--green-ok); }
+    .nam-btn.primary:hover:not(:disabled) { background: var(--green-ok); color: var(--warm-bg); }
+    .nam-status { font-size: 0.7rem; color: var(--amber); text-align: center; min-height: 1.2em; }
+    .nam-status.ok { color: var(--green-ok); }
+    .nam-status.err { color: #ff6060; }
+
+    .hud-new-btn {
+      pointer-events: all;
+      background: var(--warm-mid);
+      border: 2px solid var(--amber);
+      color: var(--amber-lt); cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; padding: 6px 10px;
+      border-radius: 3px; letter-spacing: 0.05em;
+      transition: all 0.1s;
+    }
+    .hud-new-btn:hover { background: var(--amber); color: var(--warm-bg); }
+
     /* ===== HUD ===== */
     #hud {
       position: absolute;
@@ -316,6 +391,84 @@
       flex-shrink: 0;
     }
 
+    /* ===== PROMPT CONSOLE ===== */
+    .dp-prompt-section {
+      padding: 8px 16px 10px;
+      background: #0e0804;
+      border-top: 2px solid var(--warm-faint);
+      flex-shrink: 0;
+    }
+    .dp-prompt-label {
+      color: var(--warm-dim);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+    }
+    .dp-prompt-row { display: flex; gap: 8px; align-items: flex-end; }
+    .dp-prompt-input {
+      flex: 1;
+      background: #060402;
+      border: 1px solid var(--amber-dk);
+      color: var(--amber-lt);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      padding: 7px 10px;
+      border-radius: 3px;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      pointer-events: all;
+    }
+    .dp-prompt-input:focus { border-color: var(--amber); box-shadow: 0 0 8px rgba(200,150,60,0.3); }
+    .dp-prompt-input::placeholder { color: #4a3010; }
+    .dp-prompt-send {
+      background: var(--warm-mid);
+      border: 2px solid var(--amber);
+      color: var(--amber-lt);
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem;
+      padding: 8px 12px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      pointer-events: all;
+      transition: all 0.1s;
+      flex-shrink: 0;
+      line-height: 1.8;
+    }
+    .dp-prompt-send:hover:not(:disabled) { background: var(--amber); color: var(--warm-bg); }
+    .dp-prompt-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== RESPONSE STREAM ===== */
+    .dp-response-wrap {
+      flex-shrink: 0;
+      border-top: 2px solid var(--warm-faint);
+      flex-direction: column;
+      max-height: 160px;
+    }
+    .dp-response {
+      flex: 1; overflow-y: auto;
+      padding: 8px 16px;
+      background: #070502;
+      color: #a0d870;
+      font-size: 0.7rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 40px;
+    }
+    .dp-response::-webkit-scrollbar { width: 5px; }
+    .dp-response::-webkit-scrollbar-track { background: #070502; }
+    .dp-response::-webkit-scrollbar-thumb { background: var(--amber-dk); border-radius: 2px; }
+    .dp-cursor {
+      display: inline-block; width: 7px; height: 13px;
+      background: #a0d870; margin-left: 2px; vertical-align: middle;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
     /* Tooltip */
     #tooltip {
       position: absolute;
@@ -355,6 +508,7 @@
         <span class="hud-pill-label">TICK</span>
         <span class="hud-pill-val" id="stat-tick">0</span>
       </div>
+      <button class="hud-new-btn" onclick="openNewAgentModal()">+ NEW AGENT</button>
     </div>
   </div>
 
@@ -419,12 +573,54 @@
       <div class="dp-log-header">THOUGHT LOG</div>
       <div class="dp-log" id="dp-log"></div>
 
+      <!-- Prompt console -->
+      <div class="dp-prompt-section">
+        <div class="dp-prompt-label">» TRANSMIT TO AGENT</div>
+        <div class="dp-prompt-row">
+          <textarea class="dp-prompt-input" id="dp-prompt-input" placeholder="> enter directive..." rows="2"></textarea>
+          <button class="dp-prompt-send" id="dp-prompt-send" onclick="sendPrompt()">SEND ›</button>
+        </div>
+      </div>
+
+      <!-- Response stream -->
+      <div class="dp-response-wrap" id="dp-response-wrap" style="display:none">
+        <div class="dp-log-header">RESPONSE STREAM</div>
+        <div class="dp-response" id="dp-response"></div>
+      </div>
+
       <!-- Footer -->
       <div class="dp-footer">
         <span id="dp-footer-id">--</span>
         <span id="dp-footer-sync">--</span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- New Agent Modal -->
+<div id="new-agent-modal">
+  <div class="dp-corner tl"></div>
+  <div class="dp-corner tr"></div>
+  <div class="dp-corner bl"></div>
+  <div class="dp-corner br"></div>
+  <div class="nam-titlebar">
+    <span class="nam-title">⊕ SPAWN NEW AGENT</span>
+    <button class="dp-close" onclick="closeNewAgentModal()">✕ CLOSE</button>
+  </div>
+  <div class="nam-body">
+    <div class="nam-field">
+      <label class="nam-label">AGENT NAME</label>
+      <input class="nam-input" id="nam-name" type="text" placeholder="e.g. AXIOM" maxlength="32" autocomplete="off" />
+    </div>
+    <div class="nam-field">
+      <label class="nam-label">EMOJI (optional)</label>
+      <input class="nam-input" id="nam-emoji" type="text" placeholder="e.g. 🤖" maxlength="4" autocomplete="off" />
+    </div>
+    <div class="nam-row">
+      <button class="nam-btn" onclick="closeNewAgentModal()">CANCEL</button>
+      <button class="nam-btn primary" id="nam-create-btn" onclick="createAgent()">SPAWN AGENT ›</button>
+    </div>
+    <div class="nam-status" id="nam-status"></div>
   </div>
 </div>
 
@@ -492,6 +688,12 @@ function openPopup(id) {
   if (!agent) return;
   renderPopup(agent);
   document.getElementById('datapad').classList.add('open');
+  // Reset prompt section
+  const input = document.getElementById('dp-prompt-input');
+  const btn = document.getElementById('dp-prompt-send');
+  if (input) { input.value = ''; input.disabled = false; }
+  if (btn) btn.disabled = false;
+  document.getElementById('dp-response-wrap').style.display = 'none';
 }
 
 function closePopup() {
@@ -556,7 +758,147 @@ function renderPopup(agent) {
   }).join('');
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+// ============================================================
+// Prompt console
+// ============================================================
+const agentBusyOverride = {};
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function setAgentBusy(id, busy) {
+  if (!gameScene) return;
+  const idx = AGENT_IDS.indexOf(id);
+  if (idx < 0) return;
+  const W = gameScene.scale.width, H = gameScene.scale.height;
+  const pos = gameScene.getAgentPos(id, idx, W, H);
+  const role = ROLES[id] || {};
+  const state = busy ? 'WORKING' : 'SLEEPING';
+  gameScene.drawAgent(id, pos.x, pos.y - 46, state, role);
+  gameScene.startAnimations(id, pos.x, pos.y - 46, state, role);
+}
+
+function sendPrompt() {
+  const input = document.getElementById('dp-prompt-input');
+  const btn = document.getElementById('dp-prompt-send');
+  const prompt = input.value.trim();
+  if (!prompt || !openAgentId) return;
+
+  const agent = agentData[openAgentId];
+  input.disabled = true;
+  btn.disabled = true;
+
+  const wrap = document.getElementById('dp-response-wrap');
+  const responseEl = document.getElementById('dp-response');
+  wrap.style.display = 'flex';
+  responseEl.innerHTML = '<span class="dp-cursor"></span>';
+
+  agentBusyOverride[openAgentId] = true;
+  setAgentBusy(openAgentId, true);
+
+  socket.emit('chat_send', {
+    agentId: openAgentId,
+    sessionKey: agent?.sessionKey,
+    prompt,
+  });
+}
+
+// Ctrl+Enter or Cmd+Enter sends from the textarea
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    const input = document.getElementById('dp-prompt-input');
+    if (document.activeElement === input) { e.preventDefault(); sendPrompt(); }
+  }
+});
+
+socket.on('chat_stream', ({ type, runId, text, error }) => {
+  const responseEl = document.getElementById('dp-response');
+  const input = document.getElementById('dp-prompt-input');
+  const btn = document.getElementById('dp-prompt-send');
+
+  if (type === 'delta') {
+    if (responseEl) {
+      responseEl.innerHTML = escapeHtml(text) + '<span class="dp-cursor"></span>';
+      responseEl.scrollTop = responseEl.scrollHeight;
+    }
+  } else if (type === 'final') {
+    if (responseEl) {
+      responseEl.innerHTML = escapeHtml(text || '(no response)');
+      responseEl.scrollTop = responseEl.scrollHeight;
+    }
+    if (input) { input.disabled = false; input.value = ''; }
+    if (btn) btn.disabled = false;
+    if (openAgentId) {
+      agentBusyOverride[openAgentId] = 'sleeping';
+      setAgentBusy(openAgentId, false);
+      const _id = openAgentId;
+      setTimeout(() => { if (agentBusyOverride[_id] === 'sleeping') delete agentBusyOverride[_id]; }, 90000);
+    }
+  } else if (type === 'error') {
+    if (responseEl) responseEl.innerHTML = `<span style="color:#ff6060">⚠ ERROR: ${escapeHtml(error || 'unknown error')}</span>`;
+    if (input) input.disabled = false;
+    if (btn) btn.disabled = false;
+    if (openAgentId) {
+      agentBusyOverride[openAgentId] = 'sleeping';
+      setAgentBusy(openAgentId, false);
+      const _id = openAgentId;
+      setTimeout(() => { if (agentBusyOverride[_id] === 'sleeping') delete agentBusyOverride[_id]; }, 90000);
+    }
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePopup(); closeNewAgentModal(); }
+});
+
+// ============================================================
+// New Agent Modal
+// ============================================================
+function openNewAgentModal() {
+  document.getElementById('new-agent-modal').classList.add('open');
+  document.getElementById('nam-name').value = '';
+  document.getElementById('nam-emoji').value = '';
+  document.getElementById('nam-status').textContent = '';
+  document.getElementById('nam-status').className = 'nam-status';
+  document.getElementById('nam-create-btn').disabled = false;
+  setTimeout(() => document.getElementById('nam-name').focus(), 50);
+}
+
+function closeNewAgentModal() {
+  document.getElementById('new-agent-modal').classList.remove('open');
+}
+
+function createAgent() {
+  const name = document.getElementById('nam-name').value.trim();
+  const emoji = document.getElementById('nam-emoji').value.trim();
+  const status = document.getElementById('nam-status');
+  const btn = document.getElementById('nam-create-btn');
+  if (!name) {
+    status.textContent = '⚠ enter an agent name';
+    status.className = 'nam-status err';
+    return;
+  }
+  btn.disabled = true;
+  status.textContent = 'spawning...';
+  status.className = 'nam-status';
+  socket.emit('agent_create', { name, emoji: emoji || undefined });
+}
+
+socket.on('agent_created', ({ agentId, name }) => {
+  const status = document.getElementById('nam-status');
+  status.textContent = `✓ ${name} spawned`;
+  status.className = 'nam-status ok';
+  document.getElementById('nam-create-btn').disabled = false;
+  setTimeout(() => closeNewAgentModal(), 1800);
+});
+
+socket.on('agent_create_error', ({ error }) => {
+  const status = document.getElementById('nam-status');
+  status.textContent = `⚠ ${error}`;
+  status.className = 'nam-status err';
+  document.getElementById('nam-create-btn').disabled = false;
+});
 
 // ============================================================
 // Phaser Scene — Synthetic Talents Box
@@ -564,13 +906,16 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup()
 class TalentLabScene extends Phaser.Scene {
   constructor() {
     super({ key: 'TalentLabScene' });
-    this.agentGfx  = {};  // main sprite graphics
-    this.auraGfx   = {};  // glow aura graphics
-    this.zzzGfx    = {};  // array of 3 ZZZ text objects per agent
-    this.zzzTweens = {};  // array of tweens for ZZZ
-    this.workTween = {};  // single work animation tween
-    this.nameText  = {};
-    this.roleText  = {};
+    this.agentGfx     = {};
+    this.auraGfx      = {};
+    this.deskGfxById  = {};
+    this.hitZones     = {};
+    this.zzzGfx       = {};
+    this.zzzTweens    = {};
+    this.workTween    = {};
+    this.nameText     = {};
+    this.roleText     = {};
+    this.agentCustomPos = {};
   }
 
   preload() {}
@@ -584,8 +929,6 @@ class TalentLabScene extends Phaser.Scene {
     this.drawWalls(W, H);
     this.drawWindows(W, H);
     this.drawProps(W, H);
-
-    this.deskGfxList = [];
 
     // Top sign board (pixel art sign above entrance)
     const sg = this.add.graphics().setDepth(8);
@@ -603,16 +946,128 @@ class TalentLabScene extends Phaser.Scene {
       stroke: '#3a1a00', strokeThickness: 2,
     }).setOrigin(0.5).setDepth(9);
 
+    // ---- Drag support ----
+    this.input.on('dragstart', (pointer, go) => {
+      const id = go.getData('agentId');
+      if (!id) return;
+      go.setData('startX', go.x);
+      go.setData('startY', go.y);
+      const storeStart = (obj, key) => { if (obj) { obj.setData('sx', obj.x); obj.setData('sy', obj.y); } };
+      storeStart(this.agentGfx[id]);
+      storeStart(this.auraGfx[id]);
+      storeStart(this.deskGfxById[id]);
+      storeStart(this.nameText[id]);
+      storeStart(this.roleText[id]);
+      (this.zzzGfx[id] || []).forEach(z => storeStart(z));
+      // Pause animations
+      if (this.workTween[id]) this.workTween[id].pause();
+    });
+
+    this.input.on('drag', (pointer, go, dragX, dragY) => {
+      const id = go.getData('agentId');
+      if (!id) return;
+      const dx = dragX - go.getData('startX');
+      const dy = dragY - go.getData('startY');
+      const moveObj = (obj) => { if (obj) obj.setPosition((obj.getData('sx') || 0) + dx, (obj.getData('sy') || 0) + dy); };
+      moveObj(this.agentGfx[id]);
+      moveObj(this.auraGfx[id]);
+      moveObj(this.deskGfxById[id]);
+      moveObj(this.nameText[id]);
+      moveObj(this.roleText[id]);
+      (this.zzzGfx[id] || []).forEach(z => moveObj(z));
+      go.setPosition(dragX, dragY);
+    });
+
+    this.input.on('dragend', (pointer, go) => {
+      const id = go.getData('agentId');
+      if (!id) return;
+      // hit zone is created at (x, spriteY - 6), spriteY = pos.y - 46
+      // so pos.y = go.y + 46 + 6 = go.y + 52
+      const newX = go.x;
+      const newY = go.y + 52;
+      this.agentCustomPos[id] = { x: newX, y: newY };
+      const newSpriteY = newY - 46;
+
+      // Reset all setPosition/setScale then redraw fresh
+      const resetGfx = (g) => { if (g) { g.setPosition(0, 0); g.setScale(1); g.clear(); } };
+      resetGfx(this.agentGfx[id]);
+      resetGfx(this.auraGfx[id]);
+      if (this.deskGfxById[id]) {
+        this.deskGfxById[id].setPosition(0, 0);
+        this.deskGfxById[id].setScale(1);
+        this.deskGfxById[id].clear();
+        // Redraw desk into existing gfx object
+        this._redrawDesk(this.deskGfxById[id], newX, newY);
+      }
+
+      const role = ROLES[id] || {};
+      const state = agentData[id]?.state || 'SLEEPING';
+      this.drawAgent(id, newX, newSpriteY, state, role);
+      this.startAnimations(id, newX, newSpriteY, state, role);
+      if (this.nameText[id]) this.nameText[id].setPosition(newX, newSpriteY + 32);
+      if (this.roleText[id]) this.roleText[id].setPosition(newX, newSpriteY + 44);
+      (this.zzzGfx[id] || []).forEach((z, zi) => { if (z) { z.setPosition(newX + 10 + zi*6, newSpriteY - 14 - zi*9); z.setAlpha(0); } });
+      go.setPosition(newX, newSpriteY - 6);
+    });
+
     gameScene = this;
+  }
+
+  // Reuse existing gfx object for desk (used after drag-drop)
+  _redrawDesk(g, x, y) {
+    g.fillStyle(0x000000, 0.12);
+    g.fillEllipse(x, y+28, 84, 12);
+    g.fillStyle(0x5a2e08, 1);
+    g.fillRect(x-32, y+16, 8, 18); g.fillRect(x+24, y+16, 8, 18);
+    g.fillStyle(0x7a4018, 1);
+    g.fillRect(x-31, y+16, 3, 18); g.fillRect(x+25, y+16, 3, 18);
+    g.fillStyle(0x7a4018, 1);
+    g.fillRect(x-36, y-2, 72, 20);
+    g.fillStyle(0x9a5828, 1);
+    g.fillRect(x-36, y-2, 72, 5);
+    g.fillStyle(0x5a2e08, 1);
+    g.fillRect(x-36, y+16, 72, 3);
+    g.lineStyle(1, 0x6a3210, 0.2);
+    for (let gx = x-30; gx < x+30; gx += 12) g.lineBetween(gx, y-1, gx+8, y+17);
+    g.fillStyle(0x2e2e2e, 1);
+    g.fillRect(x-17, y+3, 34, 10);
+    g.fillStyle(0x3e3e3e, 1);
+    for (let kx = x-15; kx < x+14; kx += 5) { g.fillRect(kx, y+4, 3, 3); g.fillRect(kx, y+8, 3, 3); }
+    g.fillStyle(0x4a4a4a, 1);
+    g.fillRect(x-8, y+12, 16, 2);
+    g.fillStyle(0xd8ccb0, 1); g.fillRect(x-20, y-32, 40, 30);
+    g.fillStyle(0xc8bc9e, 1); g.fillRect(x-20, y-32, 40, 4); g.fillRect(x-20, y-6, 40, 4);
+    g.fillStyle(0x3a3020, 1); g.fillRect(x-17, y-30, 34, 24);
+    g.fillStyle(0x0a2810, 1); g.fillRect(x-15, y-28, 30, 20);
+    g.fillStyle(0x40c870, 0.8);
+    g.fillRect(x-13, y-26, 11, 2); g.fillRect(x-13, y-22, 18, 2);
+    g.fillRect(x-13, y-18, 8, 2); g.fillRect(x+1, y-18, 8, 2);
+    g.fillStyle(0x40c870, 0.3); g.fillRect(x-13, y-14, 22, 2);
+    g.fillStyle(0xb8ac90, 1); g.fillRect(x-5, y-2, 10, 4); g.fillRect(x-12, y, 24, 4);
+    g.fillStyle(0xd8ccb0, 1); g.fillEllipse(x+26, y+6, 10, 14);
+    g.lineStyle(1, 0xb8ac90, 1); g.lineBetween(x+26, y, x+26, y+4);
+    g.fillStyle(0xffffff, 0.95); g.fillRect(x-30, y-1, 9, 12);
+    g.fillStyle(0xc87040, 0.85); g.fillRect(x-29, y, 7, 9);
+    g.fillStyle(0xe0d8c8, 0.9); g.fillRect(x-23, y+3, 3, 6);
+    g.fillStyle(0xfff8e8, 0.7); g.fillRect(x+16, y-1, 16, 12);
+    g.fillStyle(0xfff0d0, 0.6); g.fillRect(x+18, y, 14, 11);
+    g.lineStyle(1, 0xd8c8a0, 0.4); g.lineBetween(x+19, y+3, x+30, y+3); g.lineBetween(x+19, y+6, x+28, y+6);
+    g.setScale(1.2);
+    g.setPosition(-x * 0.2, -y * 0.2);
   }
 
   getDeskPos(i, total, W, H) {
     const cols = Math.min(3, total || 1);
     const col = i % cols, row = Math.floor(i / cols);
-    const gapX = Math.min(150, W * 0.18);
+    const gapX = Math.min(180, W * 0.22);
     const startX = W/2 - (cols-1) * gapX / 2;
     const startY = H * 0.38;
-    return { x: startX + col * gapX, y: startY + row * 165 };
+    return { x: startX + col * gapX, y: startY + row * 198 };
+  }
+
+  getAgentPos(id, idx, W, H) {
+    if (this.agentCustomPos && this.agentCustomPos[id]) return this.agentCustomPos[id];
+    return this.getDeskPos(idx, AGENT_IDS.length, W, H);
   }
 
   initAgents(agents) {
@@ -631,15 +1086,17 @@ class TalentLabScene extends Phaser.Scene {
     this.workTween = {}; this.zzzTweens = {};
 
     // Destroy previous desk graphics
-    this.deskGfxList.forEach(g => g.destroy());
-    this.deskGfxList = [];
+    Object.values(this.deskGfxById).forEach(g => g.destroy());
+    Object.values(this.hitZones).forEach(h => h.destroy());
+    this.deskGfxById = {};
+    this.hitZones = {};
 
     AGENT_IDS = agents.map(a => a.id);
 
     agents.forEach((a, i) => {
-      const pos = this.getDeskPos(i, agents.length, W, H);
+      const pos = this.getAgentPos(a.id, i, W, H);
       const deskGfx = this.drawDesk(pos.x, pos.y);
-      if (deskGfx) this.deskGfxList.push(deskGfx);
+      if (deskGfx) this.deskGfxById[a.id] = deskGfx;
       this.createAgent(a.id, i, pos.x, pos.y);
     });
   }
@@ -1087,6 +1544,9 @@ class TalentLabScene extends Phaser.Scene {
     g.lineStyle(1, 0xd8c8a0, 0.4);
     g.lineBetween(x+19, y+3, x+30, y+3);
     g.lineBetween(x+19, y+6, x+28, y+6);
+    // Scale up 20% keeping center at (x, y)
+    g.setScale(1.2);
+    g.setPosition(-x * 0.2, -y * 0.2);
     return g;
   }
 
@@ -1131,10 +1591,13 @@ class TalentLabScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(3);
     this.roleText[id] = rt;
 
-    // Hit zone
-    const hit = this.add.rectangle(x, spriteY-6, 70, 90, 0xffffff, 0)
-      .setInteractive({ cursor: 'pointer' }).setDepth(6);
+    // Hit zone — interactive & draggable
+    const hit = this.add.rectangle(x, spriteY-6, 84, 108, 0xffffff, 0)
+      .setInteractive({ draggable: true, cursor: 'grab' }).setDepth(6);
+    hit.setData('agentId', id);
+    this.hitZones[id] = hit;
 
+    let dragMoved = false;
     hit.on('pointerover', () => {
       const a = agentData[id];
       const tip = document.getElementById('tooltip');
@@ -1149,9 +1612,11 @@ class TalentLabScene extends Phaser.Scene {
       tip.style.top = (ptr.y+14)+'px';
     });
     hit.on('pointerout', () => { document.getElementById('tooltip').style.display = 'none'; });
-    hit.on('pointerdown', () => {
+    hit.on('dragstart', () => { dragMoved = false; });
+    hit.on('drag', () => { dragMoved = true; });
+    hit.on('pointerup', () => {
       document.getElementById('tooltip').style.display = 'none';
-      openPopup(id);
+      if (!dragMoved) openPopup(id);
     });
 
     // Draw initial state
@@ -1304,6 +1769,11 @@ class TalentLabScene extends Phaser.Scene {
       g.fillStyle(skinDark, 0.5);
       g.fillRect(x-3, y-1, 6, 1);
     }
+    // Scale up 20% keeping center at (x, y)
+    g.setScale(1.2);
+    g.setPosition(-x * 0.2, -y * 0.2);
+    aura.setScale(1.2);
+    aura.setPosition(-x * 0.2, -y * 0.2);
   }
 
   startAnimations(id, x, y, state, role) {
@@ -1374,10 +1844,16 @@ class TalentLabScene extends Phaser.Scene {
 
   updateAgent(agent) {
     const id = agent.id;
+    // Don't overwrite animation while a prompt is being processed
+    if (agentBusyOverride[id] === true) return;
+    // Force sleeping after response until server catches up
+    if (agentBusyOverride[id] === 'sleeping') {
+      agent = Object.assign({}, agent, { state: 'SLEEPING' });
+    }
     const idx = AGENT_IDS.indexOf(id);
     if (idx < 0) return;
     const W = this.scale.width, H = this.scale.height;
-    const pos = this.getDeskPos(idx, AGENT_IDS.length, W, H);
+    const pos = this.getAgentPos(id, idx, W, H);
     const spriteY = pos.y - 46;
     const role = ROLES[id] || { shirt:0x6a6a9a, hair:0x2a2a4a, pants:0x2a3060, skin:0xe0c080, role:'Agent' };
 

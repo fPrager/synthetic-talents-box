@@ -75,30 +75,13 @@ function tickMock() {
 const GATEWAY_URL   = process.env.OPENCLAW_GATEWAY_URL   || 'ws://localhost:18789';
 const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || '';
 
-const OC_THOUGHT_POOL = [
-  'Processing message stream...',
-  'Invoking tool chain...',
-  'Awaiting model response...',
-  'Parsing assistant output...',
-  'Streaming tokens...',
-  'Executing shell command...',
-  'Reading file context...',
-  'Writing to workspace...',
-  'Searching knowledge base...',
-  'Updating session state...',
-  'Resolving subagent task...',
-  'Running context compression...',
-  'Validating tool result...',
-  'Generating next action...',
-  'Checking approval queue...',
-];
 
 let ocAgents    = [];  // raw GatewayAgentRow[]
 let ocSessions  = [];  // raw GatewaySessionRow[]
 let ocConnected = false;
 
 const ocSessionUptime  = {};  // sessionKey → seconds
-const ocAgentThoughts  = {};  // sessionKey → [{time, text}]
+const ocAgentHistory   = {};  // sessionKey → [{time, text}] from real chat.history
 
 function resolveAgentIdFromKey(key) {
   // Session key format: "agent:{agentId}:{sessionName}" or "{agentId}:..."
@@ -111,7 +94,7 @@ function resolveAgentIdFromKey(key) {
 
 function buildAgentsFromOpenClaw() {
   const now = Date.now();
-  const ACTIVE_MS = 5 * 60 * 1000; // 5 minutes = active/WORKING
+  const ACTIVE_MS = 60 * 1000; // 60 seconds = recently active → WORKING
 
   // Map each agent to their most recently updated session
   const byAgent = {};
@@ -126,28 +109,21 @@ function buildAgentsFromOpenClaw() {
     const sess = byAgent[agent.id];
     const key  = sess?.key || agent.id;
 
-    const isWorking = sess && (now - (sess.updatedAt || 0)) < ACTIVE_MS;
+    // Use last real message timestamp if available, otherwise session updatedAt
+    const history = ocAgentHistory[key] || [];
+    const lastMsgTime = history.length > 0 ? new Date(history[0].time).getTime() : 0;
+    const lastActivity = Math.max(lastMsgTime, sess?.updatedAt || 0);
+    const isWorking = lastActivity > 0 && (now - lastActivity) < ACTIVE_MS;
     const state = isWorking ? 'WORKING' : 'SLEEPING';
 
     // CPU from token fill %
     let cpu = isWorking ? (Math.floor(Math.random() * 40) + 20) : 2;
-    if (isWorking && sess.totalTokens && sess.contextTokens) {
+    if (isWorking && sess && sess.totalTokens && sess.contextTokens) {
       cpu = Math.min(95, Math.round((sess.totalTokens / sess.contextTokens) * 100));
     }
 
     // Uptime
     ocSessionUptime[key] = (ocSessionUptime[key] || Math.floor(Math.random() * 600)) + 3;
-
-    // Thoughts
-    if (!ocAgentThoughts[key]) ocAgentThoughts[key] = [];
-    if (isWorking) {
-      const pool = sess?.model
-        ? [...OC_THOUGHT_POOL, `Running on ${sess.model}`, `ctx: ${sess.totalTokens || 0} tokens`]
-        : OC_THOUGHT_POOL;
-      const text = pool[Math.floor(Math.random() * pool.length)];
-      ocAgentThoughts[key].unshift({ time: new Date().toISOString(), text });
-      if (ocAgentThoughts[key].length > 50) ocAgentThoughts[key].pop();
-    }
 
     const displayName = (agent.identity?.name || agent.name || agent.id).toUpperCase();
 
@@ -157,9 +133,10 @@ function buildAgentsFromOpenClaw() {
       state,
       cpu,
       containerId: key,
-      thoughts: ocAgentThoughts[key],
+      thoughts: history,
       uptime: ocSessionUptime[key],
       source: 'openclaw',
+      sessionKey: sess?.key || `agent:${agent.id}:main`,
     };
   });
 
@@ -227,6 +204,28 @@ class OpenClawClient {
       return;
     }
 
+    if (f.type === 'event' && f.event === 'chat') {
+      const payload = f.payload;
+      const runId = payload?.runId;
+      if (runId) {
+        const sub = chatSubscriptions.get(runId);
+        if (sub) {
+          const state = payload.state;
+          const text = payload.message?.content?.[0]?.text || '';
+          if (state === 'delta') {
+            io.to(sub).emit('chat_stream', { type: 'delta', runId, text });
+          } else if (state === 'final') {
+            io.to(sub).emit('chat_stream', { type: 'final', runId, text });
+            chatSubscriptions.delete(runId);
+          } else if (state === 'error') {
+            io.to(sub).emit('chat_stream', { type: 'error', runId, error: payload.errorMessage });
+            chatSubscriptions.delete(runId);
+          }
+        }
+      }
+      return;
+    }
+
     if (f.type === 'res') {
       const p = this.pending.get(f.id);
       if (!p) return;
@@ -267,6 +266,25 @@ class OpenClawClient {
       ]);
       if (ar?.agents)   { ocAgents   = ar.agents; }
       if (sr?.sessions) { ocSessions = sr.sessions; }
+
+      // Fetch real chat history for each session
+      const sessions = sr?.sessions || [];
+      await Promise.all(sessions.slice(0, 6).map(async (sess) => {
+        if (!sess.key) return;
+        try {
+          const hr = await this.request('chat.history', { sessionKey: sess.key, limit: 20 });
+          if (hr?.messages) {
+            ocAgentHistory[sess.key] = hr.messages
+              .filter(m => m.role === 'assistant' || m.role === 'user')
+              .map(m => ({
+                time: m.timestamp || new Date().toISOString(),
+                text: `[${m.role}] ${(m.content?.[0]?.text || '').slice(0, 120)}`,
+              }));
+          }
+        } catch {
+          // session may have no history yet
+        }
+      }));
     } catch (err) {
       console.log(`[openclaw] poll error: ${err.message}`);
     }
@@ -292,6 +310,33 @@ class OpenClawClient {
 const ocClient = new OpenClawClient();
 ocClient.start();
 
+// runId → socket.id — tracks which browser socket is waiting for a chat run
+const chatSubscriptions = new Map();
+
+function mockStreamResponse(socket, prompt) {
+  const runId = randomUUID();
+  const words = [
+    'Processing:', `"${prompt}"`, '\n\n',
+    'Analyzing', 'request', 'parameters...', '\n',
+    'Decomposing', 'goal', 'hierarchy...', '\n',
+    'Generating', 'candidate', 'solutions...', '\n\n',
+    'Task', 'acknowledged.', 'I\'ve', 'processed', 'your', 'request',
+    'and', 'will', 'begin', 'execution', 'shortly.',
+  ];
+  socket.emit('chat_ack', { runId });
+  let i = 0, acc = '';
+  const iv = setInterval(() => {
+    if (i >= words.length) {
+      socket.emit('chat_stream', { type: 'final', runId, text: acc.trim() });
+      clearInterval(iv);
+      return;
+    }
+    const w = words[i++];
+    acc += (acc && !acc.endsWith('\n') ? ' ' : '') + w;
+    socket.emit('chat_stream', { type: 'delta', runId, text: acc });
+  }, 90);
+}
+
 // ============================================================
 // Simulation tick
 // ============================================================
@@ -312,6 +357,49 @@ io.on('connection', socket => {
     ? buildAgentsFromOpenClaw()
     : mockAgents;
   socket.emit('simulation_tick', agents);
+
+  socket.on('agent_create', async ({ name, emoji }) => {
+    if (!ocClient.connected) {
+      socket.emit('agent_create_error', { error: 'OpenClaw not connected' });
+      return;
+    }
+    const safeName = String(name || '').trim();
+    if (!safeName) {
+      socket.emit('agent_create_error', { error: 'name is required' });
+      return;
+    }
+    const agentId = safeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    try {
+      const res = await ocClient.request('agents.create', {
+        name: safeName,
+        workspace: `~/.openclaw/workspace/${agentId}`,
+        ...(emoji ? { emoji: String(emoji).trim() } : {}),
+      });
+      socket.emit('agent_created', { ok: true, agentId: res?.agentId || agentId, name: safeName });
+    } catch (err) {
+      socket.emit('agent_create_error', { error: err.message });
+    }
+  });
+
+  socket.on('chat_send', async ({ agentId, sessionKey, prompt }) => {
+    if (ocClient.connected && sessionKey) {
+      const idempotencyKey = randomUUID();
+      try {
+        const res = await ocClient.request('chat.send', {
+          sessionKey,
+          message: prompt,
+          idempotencyKey,
+        });
+        const runId = res?.runId || idempotencyKey;
+        chatSubscriptions.set(runId, socket.id);
+        socket.emit('chat_ack', { runId });
+      } catch (err) {
+        socket.emit('chat_stream', { type: 'error', error: err.message });
+      }
+    } else {
+      mockStreamResponse(socket, prompt);
+    }
+  });
 });
 
 // Poll OpenClaw on the same cadence as the tick
