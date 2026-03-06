@@ -1,0 +1,9 @@
+{
+  "id": "webspatial",
+  "channels": ["webspatial"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

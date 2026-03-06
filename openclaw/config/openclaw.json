@@ -1,0 +1,46 @@
+{
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "c0015f423c1b4e9136fdc914c9276f45cce6c94b96c078a8"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "featherless/MiniMaxAI/MiniMax-M2.5"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "featherless": {
+        "baseUrl": "https://api.featherless.ai/v1",
+        "apiKey": "${FEATHERLESS_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "MiniMaxAI/MiniMax-M2.5",
+            "name": "MiniMax-M2.5",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 256000,
+            "maxTokens": 4096
+          }
+        ]
+      }
+    }
+  }
+}

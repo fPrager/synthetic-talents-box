@@ -1,0 +1,11 @@
+{
+  "name": "@openclaw/webspatial",
+  "version": "2026.2.26",
+  "description": "OpenClaw WebSpatial Command Center channel plugin",
+  "type": "module",
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
