@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Glider Guild — Country Town Talent Labs</title>
+  <title>Synthetic Talents Box</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -337,7 +337,7 @@
 <div id="ui-overlay">
   <!-- HUD -->
   <div id="hud">
-    <div id="hud-title">✦ THE GLIDER GUILD ✦</div>
+    <div id="hud-title">✦ SYNTHETIC TALENTS BOX ✦</div>
     <div id="hud-stats">
       <div class="hud-pill">
         <span class="hud-pill-label">WORKING</span>
@@ -549,7 +549,7 @@ function renderPopup(agent) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
 
 // ============================================================
-// Phaser Scene — Country Town Talent Labs
+// Phaser Scene — Synthetic Talents Box
 // ============================================================
 class TalentLabScene extends Phaser.Scene {
   constructor() {
@@ -594,7 +594,7 @@ class TalentLabScene extends Phaser.Scene {
     [[W/2-94, H-76],[W/2+88, H-76],[W/2-94, H-60],[W/2+88, H-60]].forEach(([rx,ry]) => {
       sg.fillStyle(0xf0c858, 1); sg.fillCircle(rx, ry, 3);
     });
-    this.add.text(W/2, H - 68, '✦ TALENT LABS ✦', {
+    this.add.text(W/2, H - 68, '✦ SYNTHETIC TALENTS BOX ✦', {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: '9px', color: '#f0c858',
       stroke: '#3a1a00', strokeThickness: 2,
