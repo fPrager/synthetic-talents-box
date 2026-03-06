@@ -319,7 +319,13 @@ setInterval(() => { if (ocClient.connected) ocClient._poll(); }, 3000);
 setInterval(tick, 3000);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Synthetic Talents Box running at http://localhost:${PORT}`);
   console.log(`OpenClaw gateway: ${GATEWAY_URL}`);
+
+  if (process.env.TUNNEL === 'true') {
+    const { tunnelmole } = require('tunnelmole');
+    const url = await tunnelmole({ port: PORT });
+    console.log(`Public URL: ${url}`);
+  }
 });
