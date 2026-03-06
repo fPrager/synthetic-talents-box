@@ -1,0 +1,29 @@
+services:
+  jarvis-openclaw:
+    build:
+      context: .
+      network: host
+    image: openclaw-local:latest
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    container_name: jarvis-openclaw
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY}
+    volumes:
+      - openclaw-config:/home/node/.openclaw
+      - ./workspace:/home/node/.openclaw/workspace
+      - ./config:/home/node/.openclaw-init:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "18789:18789"
+      - "18790:18790"
+    init: true
+    restart: unless-stopped
+    command: ["sh", "-c", "[ -s /home/node/.openclaw/openclaw.json ] || cp /home/node/.openclaw-init/openclaw.json /home/node/.openclaw/openclaw.json && openclaw gateway --force"]
+
+volumes:
+  openclaw-config:
