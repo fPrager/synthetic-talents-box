@@ -400,6 +400,23 @@ io.on('connection', socket => {
       mockStreamResponse(socket, prompt);
     }
   });
+
+  socket.on('agent_fire', async ({ agentId, sessionKey }) => {
+    if (!ocClient.connected) {
+      socket.emit('agent_fire_error', { error: 'OpenClaw not connected' });
+      return;
+    }
+    try {
+      // Extract real agent ID from sessionKey
+      const realAgentId = sessionKey?.split(':')[1] || agentId;
+      await ocClient.request('agents.delete', { agentId: realAgentId });
+      socket.emit('agent_fired', { ok: true, agentId });
+      console.log(`[agents] Fired agent: ${realAgentId}`);
+    } catch (err) {
+      console.error(`[agents] Fire error:`, err.message);
+      socket.emit('agent_fire_error', { error: err.message });
+    }
+  });
 });
 
 // Poll OpenClaw on the same cadence as the tick

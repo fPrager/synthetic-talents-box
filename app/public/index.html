@@ -232,6 +232,20 @@
     }
     .dp-close:hover { background: var(--amber); color: var(--warm-bg); }
 
+    .dp-fire {
+      background: var(--warm-mid);
+      border: 2px solid #c84040;
+      color: #ff6666;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      padding: 5px 10px;
+      border-radius: 3px;
+      transition: all 0.1s;
+      letter-spacing: 0.05em;
+    }
+    .dp-fire:hover { background: #c84040; color: #fff; }
+
     /* Agent header strip */
     .dp-agent-header {
       display: flex; align-items: center; gap: 14px;
@@ -524,7 +538,10 @@
         <div class="dp-icon" id="dp-icon">📋</div>
         <span class="dp-title" id="dp-title">TALENT FILE</span>
       </div>
-      <button class="dp-close" onclick="closePopup()">✕ CLOSE</button>
+      <div style="display:flex;gap:8px;">
+        <button class="dp-fire" onclick="fireAgent()">🔥 FIRE</button>
+        <button class="dp-close" onclick="closePopup()">✕ CLOSE</button>
+      </div>
     </div>
 
     <div style="display:flex;flex-direction:column;overflow:hidden;flex:1;">
@@ -883,6 +900,17 @@ function createAgent() {
   status.textContent = 'spawning...';
   status.className = 'nam-status';
   socket.emit('agent_create', { name, emoji: emoji || undefined });
+}
+
+function fireAgent() {
+  if (!openAgentId) return;
+  const agent = agentData[openAgentId];
+  if (!agent) return;
+  
+  if (!confirm(`Fire ${agent.name}? This will destroy the agent.`)) return;
+  
+  socket.emit('agent_fire', { agentId: openAgentId, sessionKey: agent.sessionKey });
+  closePopup();
 }
 
 socket.on('agent_created', ({ agentId, name }) => {
